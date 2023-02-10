@@ -1,0 +1,22 @@
+---
+title: "figures"
+author: "Emily Bishop"
+date: "2023-02-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(here)
+```
+
+```{r load_data, echo = FALSE}
+trout <- here("data", "siscowet.csv") %>% read_csv()
+```
+
+```{r exploratory_plot}
+
+```
+
