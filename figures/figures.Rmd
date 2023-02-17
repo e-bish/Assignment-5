@@ -6,10 +6,11 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 library(tidyverse)
 library(here)
+library(dichromat)
 ```
 
 ```{r load_data, echo = FALSE}
@@ -17,6 +18,27 @@ trout <- here("data", "siscowet.csv") %>% read_csv()
 ```
 
 ```{r exploratory_plot}
+trout %>%
+  filter(!is.na(sex)) %>% 
+  group_by(sex) %>% 
+  mutate(label = paste0(locID, "\n", round(mean(len),2))) %>% 
+  ggplot(aes(x = sex, y = len, group = sex)) +
+    geom_violin() 
 
 ```
 
+
+```{r expository_plot}
+pal <- dichromat_pal("BluetoOrange.10")(2)
+
+trout %>%
+  filter(!is.na(sex)) %>% 
+  mutate(sex = recode(sex, "F" = "Female", "M" = "Male")) %>% 
+  group_by(sex) %>% 
+  mutate(label = paste0(locID, "\n", round(mean(len),2))) %>% 
+  ggplot(aes(x = sex, y = len, color = sex, shape = sex)) +
+    geom_violin() + 
+  theme_classic() +
+    labs(x ="\nSex", y ="Total Length (mm)\n") +
+  scale_color_manual(values = pal)
+```
