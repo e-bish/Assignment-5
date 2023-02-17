@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 library(tidyverse)
 library(here)
+library(ggtext)
 library(dichromat)
 ```
 
@@ -17,28 +18,34 @@ library(dichromat)
 trout <- here("data", "siscowet.csv") %>% read_csv()
 ```
 
-```{r exploratory_plot}
+```{r exploratory_plot, fig.align= 'center'}
 trout %>%
   filter(!is.na(sex)) %>% 
   group_by(sex) %>% 
   mutate(label = paste0(locID, "\n", round(mean(len),2))) %>% 
   ggplot(aes(x = sex, y = len, group = sex)) +
     geom_violin() 
-
 ```
 
 
-```{r expository_plot}
-pal <- dichromat_pal("BluetoOrange.10")(2)
+```{r expository_plot, fig.align='center'}
+pal <- scales::dichromat_pal("BluetoOrange.10")(5)
 
 trout %>%
   filter(!is.na(sex)) %>% 
   mutate(sex = recode(sex, "F" = "Female", "M" = "Male")) %>% 
-  group_by(sex) %>% 
-  mutate(label = paste0(locID, "\n", round(mean(len),2))) %>% 
-  ggplot(aes(x = sex, y = len, color = sex, shape = sex)) +
+  ggplot(aes(x = sex, y = len, fill = sex, color = sex)) +
     geom_violin() + 
   theme_classic() +
-    labs(x ="\nSex", y ="Total Length (mm)\n") +
-  scale_color_manual(values = pal)
+  scale_color_manual(values = pal[1:2]) +
+  scale_fill_manual(values = pal[1:2]) +
+  labs(x ="\nSex", y ="Total Length (mm)\n") +
+  labs(title = "<b> Total length by sex in Siscowet Lake Trout</b><br>
+       <span style ='font-size:10pt'>The distribution of lengths differs slightly between <span style='color:#0055FF'>Female</span> and <span     style='color:#3399FF'>Male</span> trout.</span>") +
+  theme(legend.title = element_blank(),
+        axis.title.x = element_blank(),     
+        plot.title = element_markdown()) +
+  stat_summary(fun = "mean", 
+               geom = "point",
+               colour = pal[5])
 ```
